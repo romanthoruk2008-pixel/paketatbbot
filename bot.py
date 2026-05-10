@@ -22,7 +22,7 @@ import asyncio
 # ══════════════════════════════════════════
 # КОНФІГ — змінити тут
 # ══════════════════════════════════════════
-BOT_TOKEN = 8353488924:AAEQxCfIoCZEeSXiy8jVRXMb9Gf7-lJKnB4
+BOT_TOKEN = "8353488924:AAEQxCfIoCZEeSXiy8jVRXMb9Gf7-lJKnB4"
 MINI_APP_URL = https://paketatb.netlify.app/
 
 # ══════════════════════════════════════════
