@@ -22,8 +22,8 @@ import asyncio
 # ══════════════════════════════════════════
 # КОНФІГ — змінити тут
 # ══════════════════════════════════════════
-BOT_TOKEN = "ТВІЙ_ТОКЕН_ВІД_BOTFATHER"  # @BotFather → /8353488924:AAEQxCfIoCZEeSXiy8jVRXMb9Gf7-lJKnB4
-MINI_APP_URL = "ТВОЄ_ПОСИЛАННЯ_НА_MINI_APP"  # напр. https://paketatb.netlify.app/
+BOT_TOKEN = 8353488924:AAEQxCfIoCZEeSXiy8jVRXMb9Gf7-lJKnB4
+MINI_APP_URL = https://paketatb.netlify.app/
 
 # ══════════════════════════════════════════
 # FSM СТАНИ
