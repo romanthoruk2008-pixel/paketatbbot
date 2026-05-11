@@ -22,8 +22,8 @@ import asyncio
 # ══════════════════════════════════════════
 # КОНФІГ — змінити тут
 # ══════════════════════════════════════════
-BOT_TOKEN = "8353488924:AAGwuXyAKantDxiTyXAMb6DtLsA8_qzXbww"
-MINI_APP_URL = "https://paketatb.netlify.app/"
+BOT_TOKEN = "ТВІЙ_ТОКЕН_ВІД_BOTFATHER"  # @BotFather → /newbot
+MINI_APP_URL = "ТВОЄ_ПОСИЛАННЯ_НА_MINI_APP"  # напр. https://твій-сайт.com
 
 # ══════════════════════════════════════════
 # FSM СТАНИ
@@ -36,6 +36,16 @@ class AddQuiz(StatesGroup):
 # ПАРСЕР ПИТАНЬ
 # ══════════════════════════════════════════
 def parse_questions(text: str) -> list[dict]:
+    """
+    Розбирає текст у форматі:
+    Питання: ...
+    A: ...
+    B: ...
+    C: ...
+    D: ...
+    Відповідь: A
+    Пояснення: ...
+    """
     blocks = re.split(r'\n\s*\n', text.strip())
     questions = []
 
@@ -72,16 +82,16 @@ def parse_questions(text: str) -> list[dict]:
 def main_kb():
     return ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text="🛍 Відкрити пакет", web_app=WebAppInfo(url=MINI_APP_URL))],
-            [KeyboardButton(text="➕ Закинути тести"), KeyboardButton(text="🧾 Чек (Статистика)")],
-            [KeyboardButton(text="❓ Як пакувати")],
+            [KeyboardButton(text="📱 Відкрити тренажер", web_app=WebAppInfo(url=MINI_APP_URL))],
+            [KeyboardButton(text="➕ Додати тести"), KeyboardButton(text="📊 Моя статистика")],
+            [KeyboardButton(text="❓ Як додавати тести")],
         ],
         resize_keyboard=True
     )
 
 def cancel_kb():
     return ReplyKeyboardMarkup(
-        keyboard=[[KeyboardButton(text="❌ Скасувати (Пакет порвався)")]],
+        keyboard=[[KeyboardButton(text="❌ Скасувати")]],
         resize_keyboard=True
     )
 
@@ -90,26 +100,33 @@ def cancel_kb():
 # ══════════════════════════════════════════
 async def cmd_start(message: types.Message, state: FSMContext):
     await state.clear()
-    name = message.from_user.first_name or "студенте"
+    name = message.from_user.first_name or "друже"
     await message.answer(
-        f"Здарова, {hbold(name)}! 🎒\n\n"
-        "Тримай свій ПАКЕТ АТБ для підготовки до сесії. Виживаємо разом.\n\n"
-        "Що він витримає:\n"
-        "• Збереже твої тести (як мівіну на чорний день)\n"
-        "• Прожене по питаннях (тренажер)\n"
-        "• Покаже, де ти тупиш (робота над помилками)\n\n"
-        "Тисни <b>➕ Закинути тести</b>, щоб наповнити пакет!",
+        f"Здарова, {hbold(name)}! 🛒\n\n"
+        "ПАКЕТ АТБ для сесії вже тут. Легендарний. Помʼятий. Але тримається.\n\n"
+        "Тут лежить твоя сесія. І твій mental state теж десь тут.\n\n"
+        "Що в пакеті:\n"
+        "• Тести — як мівіна на чорний день\n"
+        "• Тренажер — щоб життя медом не здавалось\n"
+        "• Помилки — архів твоїх страждань\n\n"
+        "Пакет витримує:\n"
+        "✓ паніку о 2 ночі\n"
+        "✓ «я нічого не знаю»\n"
+        "✓ 98 відкритих вкладок\n"
+        "✓ останню надію\n"
+        "✓ екзамен завтра\n\n"
+        "Тисни <b>❓ Як пакувати</b> і починай виживання.",
         parse_mode="HTML",
         reply_markup=main_kb()
     )
 
 async def btn_help(message: types.Message):
     await message.answer(
-        "🧾 <b>ІНСТРУКЦІЯ НА КАСІ</b>\n\n"
-        "1️⃣ Відкриваєш ChatGPT або Claude\n"
-        "2️⃣ Кидаєш туди свій конспект\n"
-        "3️⃣ Пишеш: <i>«Склади 20 тестових питань з варіантами відповідей A/B/C/D у такому форматі:»</i>\n\n"
-        "Потрібний формат (чітко по штрихкоду):\n"
+        "📋 <b>Як додавати тести</b>\n\n"
+        "1️⃣ Відкрий ChatGPT або Claude.ai\n"
+        "2️⃣ Скинь туди свій конспект або презентацію\n"
+        "3️⃣ Напиши: <i>«Склади 20 тестових питань з варіантами відповідей A/B/C/D у такому форматі:»</i>\n\n"
+        "Потрібний формат:\n"
         "<code>Питання: Що таке фотосинтез?\n"
         "A: Процес дихання\n"
         "B: Синтез органіки зі світла\n"
@@ -117,7 +134,7 @@ async def btn_help(message: types.Message):
         "D: Синтез білка\n"
         "Відповідь: B\n"
         "Пояснення: Фотосинтез — це...</code>\n\n"
-        "4️⃣ Копіюєш і кидаєш мені через <b>➕ Закинути тести</b>",
+        "4️⃣ Скопіюй результат і відправ мені через <b>➕ Додати тести</b>",
         parse_mode="HTML",
         reply_markup=main_kb()
     )
@@ -125,36 +142,36 @@ async def btn_help(message: types.Message):
 async def btn_add(message: types.Message, state: FSMContext):
     await state.set_state(AddQuiz.waiting_subject)
     await message.answer(
-        "🏷 <b>КРОК 1/2</b>\n\nНапиши назву предмета (наліпи цінник):",
+        "📚 <b>Крок 1/2</b>\n\nНапиши назву предмету:",
         parse_mode="HTML",
         reply_markup=cancel_kb()
     )
 
 async def get_subject(message: types.Message, state: FSMContext):
-    if message.text == "❌ Скасувати (Пакет порвався)":
+    if message.text == "❌ Скасувати":
         await state.clear()
-        await message.answer("Окей, скасовано. Пакет пустий.", reply_markup=main_kb())
+        await message.answer("Скасовано.", reply_markup=main_kb())
         return
 
     await state.update_data(subject=message.text.strip())
     await state.set_state(AddQuiz.waiting_questions)
     await message.answer(
         f"✅ Предмет: <b>{message.text.strip()}</b>\n\n"
-        "📝 <b>КРОК 2/2</b>\n\n"
-        "Тепер вставляй тести у форматі:\n\n"
+        "📝 <b>Крок 2/2</b>\n\n"
+        "Тепер вставте тести у форматі:\n\n"
         "<code>Питання: ...\n"
         "A: ...\nB: ...\nC: ...\nD: ...\n"
         "Відповідь: A\n"
         "Пояснення: ...</code>\n\n"
-        "Між питаннями має бути порожній рядок (як пробіл на чеку).",
+        "Кілька питань розділяй порожнім рядком.",
         parse_mode="HTML",
         reply_markup=cancel_kb()
     )
 
 async def get_questions(message: types.Message, state: FSMContext):
-    if message.text == "❌ Скасувати (Пакет порвався)":
+    if message.text == "❌ Скасувати":
         await state.clear()
-        await message.answer("Скасовано. Тести розсипались.", reply_markup=main_kb())
+        await message.answer("Скасовано.", reply_markup=main_kb())
         return
 
     data = await state.get_data()
@@ -163,26 +180,30 @@ async def get_questions(message: types.Message, state: FSMContext):
 
     if not questions:
         await message.answer(
-            "❌ Брак на виробництві. Не вдалося розпізнати питання.\n\n"
+            "❌ Не вдалося розпізнати питання.\n\n"
             "Перевір формат — між питаннями має бути порожній рядок.\n"
-            "Натисни ❓ Як пакувати для прикладу.",
+            "Натисни ❓ Як додавати тести для прикладу.",
             reply_markup=cancel_kb()
         )
         return
 
+    # Відправляємо дані в Mini App через inline кнопку
     payload = json.dumps({
         "subject": subject,
         "questions": questions
     }, ensure_ascii=False)
 
+    # Кодуємо для URL (обрізаємо якщо занадто довго — Telegram ліміт 512 байт)
     from urllib.parse import quote
     encoded = quote(payload)
 
     if len(encoded) > 400:
+        # Занадто багато питань — відправляємо частинами
+        # Для простоти зберігаємо в повідомленні
         await message.answer(
-            f"✅ Запакували <b>{len(questions)}</b> питань!\n\n"
-            f"🏷 Предмет: <b>{subject}</b>\n\n"
-            "Їх забагато для швидкого посилання. Відкрий пакет і додай їх вручну через кнопку всередині.",
+            f"✅ Розпізнано <b>{len(questions)}</b> питань!\n\n"
+            f"Предмет: <b>{subject}</b>\n\n"
+            "Відкрий тренажер і додай їх вручну через кнопку «Додати тести» в самому додатку.",
             parse_mode="HTML",
             reply_markup=main_kb()
         )
@@ -190,14 +211,14 @@ async def get_questions(message: types.Message, state: FSMContext):
         url_with_data = f"{MINI_APP_URL}?data={encoded}"
         kb = InlineKeyboardMarkup(inline_keyboard=[[
             InlineKeyboardButton(
-                text=f"🛍 Закинути в пакет ({len(questions)} шт.)",
+                text=f"✅ Відкрити тренажер ({len(questions)} питань)",
                 web_app=WebAppInfo(url=url_with_data)
             )
         ]])
         await message.answer(
-            f"✅ Чек пробито. <b>{len(questions)}</b> питань\n"
-            f"🏷 Предмет: <b>{subject}</b>\n\n"
-            "Тисни кнопку, щоб закинути це все в тренажер:",
+            f"✅ Готово! Розпізнано <b>{len(questions)}</b> питань\n"
+            f"Предмет: <b>{subject}</b>\n\n"
+            "Натисни кнопку, щоб завантажити їх у тренажер:",
             parse_mode="HTML",
             reply_markup=kb
         )
@@ -206,12 +227,12 @@ async def get_questions(message: types.Message, state: FSMContext):
 
 async def btn_stats(message: types.Message):
     await message.answer(
-        "🧾 <b>ТВІЙ ЧЕК (Статистика)</b>\n\n"
-        "Відкрий пакет, щоб подивитись деталі:",
+        "📊 <b>Статистика</b>\n\n"
+        "Відкрий тренажер щоб побачити детальну статистику по кожному предмету:",
         parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
             InlineKeyboardButton(
-                text="🛍 Відкрити пакет",
+                text="📱 Відкрити тренажер",
                 web_app=WebAppInfo(url=MINI_APP_URL)
             )
         ]])
@@ -219,27 +240,28 @@ async def btn_stats(message: types.Message):
 
 async def unknown(message: types.Message):
     await message.answer(
-        "Не пробивається по касі. Використай меню нижче 👇",
+        "Не розумію цю команду. Використай меню нижче 👇",
         reply_markup=main_kb()
     )
 
+# ══════════════════════════════════════════
+# MAIN
+# ══════════════════════════════════════════
 async def main():
     bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher(storage=MemoryStorage())
 
+    # Реєстрація хендлерів
     dp.message.register(cmd_start, CommandStart())
-    dp.message.register(btn_help, F.text == "❓ Як пакувати")
-    dp.message.register(btn_add, F.text == "➕ Закинути тести")
-    dp.message.register(btn_stats, F.text == "🧾 Чек (Статистика)")
+    dp.message.register(btn_help, F.text == "❓ Як додавати тести")
+    dp.message.register(btn_add, F.text == "➕ Додати тести")
+    dp.message.register(btn_stats, F.text == "📊 Моя статистика")
     dp.message.register(get_subject, AddQuiz.waiting_subject)
     dp.message.register(get_questions, AddQuiz.waiting_questions)
     dp.message.register(unknown)
 
-    print("✅ Пакет АТБ на касі (Бот запущено)!")
+    print("✅ Бот запущено!")
     await dp.start_polling(bot)
-
-if __name__ == "__main__":
-    asyncio.run(main())
 
 if __name__ == "__main__":
     asyncio.run(main())
