@@ -113,18 +113,39 @@ async def cmd_start(message: types.Message, state: FSMContext):
 async def btn_help(message: types.Message):
     await message.answer(
         "🧾 <b>ІНСТРУКЦІЯ НА КАСІ</b>\n\n"
-        "1️⃣ Відкриваєш ChatGPT або Claude\n"
-        "2️⃣ Кидаєш туди свій конспект\n"
-        "3️⃣ Пишеш: <i>«Склади 20 тестових питань з варіантами відповідей A/B/C/D у такому форматі:»</i>\n\n"
-        "Потрібний формат (чітко по штрихкоду):\n"
-        "<code>Питання: Що таке фотосинтез?\n"
-        "A: Процес дихання\n"
-        "B: Синтез органіки зі світла\n"
-        "C: Поділ клітини\n"
-        "D: Синтез білка\n"
-        "Відповідь: B\n"
-        "Пояснення: Фотосинтез — це...</code>\n\n"
-        "4️⃣ Копіюєш і кидаєш мені через <b>➕ Закинути тести</b>",
+        "1️⃣ Відкрий ChatGPT або Claude\n"
+        "2️⃣ Кинь туди свій конспект або слайди\n"
+        "3️⃣ Скопіюй промпт з наступного повідомлення і встав його ПЕРЕД матеріалом\n"
+        "4️⃣ Отримані тести кинь мені через <b>➕ Закинути тести</b>",
+        parse_mode="HTML",
+        reply_markup=main_kb()
+    )
+    await message.answer(
+        "<code>"
+        "Generate 20 university-level multiple choice exam questions based on the material below.\n\n"
+        "Format each question EXACTLY like this (with a blank line between questions):\n\n"
+        "Питання: [question text]\n"
+        "A: [option]\n"
+        "B: [option]\n"
+        "C: [option]\n"
+        "D: [option]\n"
+        "Відповідь: [correct letter]\n"
+        "Пояснення: [explanation of why this answer is correct, and why the others are wrong]\n\n"
+        "Rules:\n"
+        "- One correct answer per question\n"
+        "- Wrong answers must be highly plausible — use real terminology, partial truths, and common misconceptions\n"
+        "- Never use silly distractors like none of the above or all of the above\n"
+        "- Mix question types: definitions, comparisons, application, cause-and-effect, chronology, which is NOT\n"
+        "- At least 3 questions should be tricky — where two answers seem correct but one is more precise\n"
+        "- Explanations must be detailed: why correct is right AND why the most tempting wrong answer is wrong\n"
+        "- Cover the full material evenly\n"
+        "- Include at least 2 questions comparing two different authors/theories/concepts\n"
+        "- Include at least 2 questions about specific data, dates or figures\n"
+        "- Do not number the questions\n"
+        "- Write at university final exam level, not high school\n\n"
+        "Material:\n"
+        "[PASTE YOUR NOTES HERE]"
+        "</code>",
         parse_mode="HTML",
         reply_markup=main_kb()
     )
